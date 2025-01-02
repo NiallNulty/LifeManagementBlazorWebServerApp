@@ -1,0 +1,141 @@
+﻿@page "/notes"
+@using LifeManagementBlazorWebServerApp.Models;
+@using System.Linq;
+
+<PageTitle>Notes</PageTitle>
+
+<h1>Notes</h1>
+
+<h4>Open Existing Note</h4>
+<select @onchange="OnSelectChanged" style="width:380px" name="notes" id="notes">
+    <option value=""></option>
+    @foreach (var notesListItem in notesList)
+    {
+        <option value="@notesListItem.Title">@notesListItem.Title</option>
+    }
+</select>
+<br><br>
+
+<h4>Create New Note</h4>
+
+<p>Add a Title</p>
+<textarea @bind="newTitle" style="resize:none" name="title" id="title" cols="40" rows="1"></textarea>
+<br><br>
+
+<p>Add a Note</p>
+<textarea @bind="newNote" style="resize:none" name="note" id="note" cols="40" rows="5"></textarea>
+<br><br>
+
+<button class="btn btn-primary" @onclick="SaveNote">Save</button>
+<br><br>
+
+<button class="btn btn-primary" @onclick="UpdateNote">Update</button>
+<br><br>
+
+<button class="btn btn-secondary" @onclick="DeleteNote">Delete</button>
+<br><br>
+
+<p style="color:red;">@errorMessage</p>
+
+@code {
+    private string newTitle = string.Empty;
+    private string newNote = string.Empty;
+    private string errorMessage = string.Empty;
+    private List<NotesModel> notesList = new List<NotesModel>();
+    private string notesListItem = string.Empty;
+
+    private void OnSelectChanged(ChangeEventArgs e)
+    {
+        if(!string.IsNullOrEmpty(e.Value.ToString()))
+        {
+            var selected = notesList.Where(x => x.Title == e.Value.ToString().Trim()).FirstOrDefault();
+
+            newTitle = selected.Title;
+            newNote = selected.Note;
+        }
+        else
+        {
+            newTitle = string.Empty;
+            newNote = string.Empty;
+        }
+    }
+
+    private void SaveNote()
+    {
+        bool titleExists = notesList.Any(x => x.Title == newTitle.Trim());
+
+        if (!string.IsNullOrEmpty(newTitle) && !titleExists)
+        {
+            if(string.IsNullOrEmpty(newNote))
+            {
+                errorMessage = "Note is empty. Please enter some text before saving.";
+            }
+            else
+            {
+                errorMessage = string.Empty;
+
+                NotesModel note = new NotesModel
+                {
+                    Title = newTitle.Trim(),
+                    Note = newNote.Trim()
+                };
+
+                notesList.Add(note);
+                newTitle = string.Empty; 
+                newNote = string.Empty;
+            }
+        }
+        else
+        {
+            errorMessage = "Title already exists or is empty. Please use another Title. If you want to update an existing note, please use the Update button instead.";
+        }
+    }
+
+    private void UpdateNote()
+    {
+        bool titleExists = notesList.Any(x => x.Title == newTitle.Trim());
+
+        if (string.IsNullOrEmpty(newTitle) || !titleExists)
+        {
+            errorMessage = "Title does not exist or is empty. Please use an existing Title. If you want to create a new note, please use the Save button instead.";
+        }
+        else
+        {
+            errorMessage = string.Empty;
+
+            var noteToUpdate = notesList.FirstOrDefault(x => x.Title == newTitle.Trim());
+
+            if (noteToUpdate != null)
+            {
+                noteToUpdate.Note = newNote; 
+            }
+
+            newTitle = string.Empty; 
+            newNote = string.Empty;
+        }
+    }
+
+    private void DeleteNote()
+    {
+        bool titleExists = notesList.Any(x => x.Title == newTitle.Trim());
+
+        if (string.IsNullOrEmpty(newTitle) || !titleExists)
+        {
+            errorMessage = "Title does not exist or is empty. Please use an existing Title.";
+        }
+        else
+        {
+            errorMessage = string.Empty;
+
+            var noteToDelete = notesList.FirstOrDefault(x => x.Title == newTitle.Trim());
+
+            if (noteToDelete != null)
+            {
+                notesList.Remove(noteToDelete);
+            }
+
+            newTitle = string.Empty; 
+            newNote = string.Empty;
+        }
+    }
+}

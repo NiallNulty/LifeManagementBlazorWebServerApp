@@ -6,8 +6,8 @@
 
 <h1>Notes</h1>
 
-<h4>Open Existing Note</h4>
-<select @onchange="OnSelectChanged" style="width:380px" name="notes" id="notes">
+<h4 style="margin-bottom:10px">Open Existing Note</h4>
+<select @onchange="OnSelectChanged" style="width:380px; height:30px" name="notes" id="notes">
     <option value=""></option>
     @foreach (var notesListItem in notesList)
     {
@@ -16,14 +16,14 @@
 </select>
 <br><br>
 
-<h4>Create New Note</h4>
+<h4 style="margin-top:50px;">Create New Note</h4>
 
-<p>Add a Title</p>
+<p style="margin-top:10px; margin-bottom:5px">Add a Title</p>
 <textarea @bind="newTitle" style="resize:none" name="title" id="title" cols="40" rows="1"></textarea>
 <br><br>
 
-<p>Add a Note</p>
-<textarea @bind="newNote" style="resize:none" name="note" id="note" cols="40" rows="5"></textarea>
+<p style="margin-top:10px; margin-bottom:5px">Add a Note</p>
+<textarea @bind="newNote" style="resize:none; margin-bottom:50px;" name="note" id="note" cols="40" rows="5"></textarea>
 <br><br>
 
 <button class="btn btn-primary" @onclick="SaveNote">Save</button>
